@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 # CONFIGURAÇÃO DA PÁGINA
@@ -14,6 +13,36 @@ if "produtos" not in st.session_state:
 
 if "pedidos" not in st.session_state:
     st.session_state.pedidos = []
+
+
+# FUNÇÃO PARA ESCOLHER O EMOJI DO ALIMENTO
+def escolher_imagem(nome):
+    nome = nome.lower().strip()
+
+    alimentos = {
+        "pizza": "🍕", "hamburguer": "🍔", "hambúrguer": "🍔",
+        "arroz": "🍚", "feijao": "🫘", "feijão": "🫘",
+        "pao": "🍞", "pão": "🍞", "bolo": "🍰", "leite": "🥛",
+        "banana": "🍌", "maca": "🍎", "maçã": "🍎",
+        "laranja": "🍊", "uva": "🍇", "morango": "🍓",
+        "melancia": "🍉", "cenoura": "🥕", "tomate": "🍅",
+        "batata": "🥔", "queijo": "🧀", "ovo": "🥚",
+        "frango": "🍗", "carne": "🥩", "peixe": "🐟",
+        "sanduiche": "🥪", "sanduíche": "🥪", "salada": "🥗",
+        "sorvete": "🍦", "cafe": "☕", "café": "☕",
+        "suco": "🧃", "biscoito": "🍪", "abacaxi": "🍍",
+        "manga": "🥭", "coco": "🥥", "milho": "🌽",
+        "pimentao": "🫑", "pimentão": "🫑",
+        "brocolis": "🥦", "brócolis": "🥦", "cogumelo": "🍄",
+        "cereja": "🍒", "pera": "🍐", "limão": "🍋",
+        "limao": "🍋", "kiwi": "🥝", "amendoim": "🥜",
+        "castanha": "🌰", "camarão": "🍤", "camarao": "🍤",
+        "macarrão": "🍝", "macarrao": "🍝", "pipoca": "🍿",
+        "panqueca": "🥞", "mel": "🍯", "batata frita": "🍟", "taco": "🌮", "sushi": "🍣",
+        "pudim": "🍮"
+    }
+
+    return alimentos.get(nome, "🍽️")
 
 
 # FUNÇÃO PARA CALCULAR O PREÇO COM DESCONTO
@@ -39,6 +68,7 @@ def cadastrar_alimento(nome, estabelecimento, preco, desconto, quantidade):
 
     produto = {
         "nome": nome.strip(),
+        "imagem": escolher_imagem(nome),
         "estabelecimento": estabelecimento.strip(),
         "preco": preco,
         "desconto": desconto,
@@ -149,7 +179,7 @@ with aba2:
 
             with st.container(border=True):
 
-                st.subheader("🍽️ " + produto["nome"])
+                st.subheader(produto["imagem"] + " " + produto["nome"])
 
                 st.write(
                     "Estabelecimento: "
@@ -202,7 +232,8 @@ with aba3:
 
             alimento_escolhido = st.selectbox(
                 "Escolha um alimento",
-                nomes
+                nomes,
+                format_func=lambda nome: f"{escolher_imagem(nome)} {nome}"
             )
 
             quantidade_pedido = st.number_input(
@@ -234,13 +265,14 @@ with aba3:
 
                     st.session_state.pedidos.append({
                         "alimento": produto["nome"],
+                        "imagem": produto["imagem"],
                         "quantidade": quantidade_pedido,
                         "total": total
                     })
 
                     st.success("Pedido realizado com sucesso!")
 
-                    st.write(f"Alimento: {produto['nome']}")
+                    st.write(f"Alimento: {produto['imagem']} {produto['nome']}")
                     st.write(f"Quantidade: {quantidade_pedido}")
                     st.write(f"Valor total: R$ {total:.2f}")
 
@@ -263,7 +295,7 @@ with aba3:
         for pedido in st.session_state.pedidos:
 
             st.write(
-                f"🍎 {pedido['alimento']} | "
+                f"{pedido['imagem']} {pedido['alimento']} | "
                 f"Quantidade: {pedido['quantidade']} | "
                 f"Total: R$ {pedido['total']:.2f}"
             )
